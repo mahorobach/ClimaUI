@@ -20,7 +20,7 @@ struct ContentView: View {
                 
                 HStack {
                     Spacer()
-                    Image(systemName: "sun.max")
+                    Image(systemName: viewModel.weatherData?.condition ?? "sun.max")
                         .foregroundColor(Color("WeatherColor"))
                         .font(.system(size: UIScreen.main.bounds.width / 4))
                         .padding(.trailing, 20)
@@ -30,7 +30,7 @@ struct ContentView: View {
                 
                 HStack{
                     Spacer()
-                    Text("21")
+                    Text(String(format: "%.1f", viewModel.weatherData?.temperature ?? 10.0))
                         .fontWeight(.black)
                     
                     Text("°")
@@ -46,7 +46,7 @@ struct ContentView: View {
                 
                 HStack{
                     Spacer()
-                    Text("Tokyo")
+                    Text(viewModel.weatherData?.cityName ?? "Tokyo")
                         .font(.system(size: 40))
                         .foregroundColor(Color("WeatherColor"))
                 }

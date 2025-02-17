@@ -8,9 +8,13 @@
 import SwiftUI
 
 struct SearchBarView: View {
-    @ObservedObject var viewModel = WeatherViewModel()
-//    @Binding var searchText: String
+    @ObservedObject var viewModel : WeatherViewModel
     @FocusState.Binding var isFocused: Bool
+    
+    init(viewModel: WeatherViewModel, isFocused: FocusState<Bool>.Binding) {
+        self.viewModel = viewModel
+        self._isFocused = isFocused
+    }
     
       
     var body: some View {
