@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import CoreLocation
 
-class WeatherViewModel: ObservableObject, WeatherManagerDelegate {
+
+class WeatherViewModel: ObservableObject {
     @Published var searchText: String = ""
-    @Published var weatherData: WeatherData?
+    @Published var weatherData: ContentModel?
     
-    private var weatherManager: WeatherManager
+    var weatherManager: WeatherManager
+    
     
     init() {
         weatherManager = WeatherManager()
@@ -23,21 +26,36 @@ class WeatherViewModel: ObservableObject, WeatherManagerDelegate {
         }
     }
     
-    func didUpdateWeather(weatherModel: WeatherModel) {
+    func fetchWeatherWithLocation(location: CLLocationCoordinate2D) {
         Task {
-            weatherData = WeatherData(
-                temperature: weatherModel.temperature,
-                cityName: weatherModel.cityName,
-                condition: weatherModel.conditionName
+            await weatherManager.fetchWeatherData(
+                latitude: location.latitude,
+                longitude: location.longitude
             )
+        }
+    }    
+}
+
+//MARK: - WeatherViewModel Delegate
+
+extension WeatherViewModel: WeatherManagerDelegate  {
+    func didUpdateWeather(weatherManager: WeatherManager,weatherModel: WeatherModel) {
+        
+        Task {
+            weatherData = ContentModel(
+                temperature: weatherModel.temperature,
+                cityLabel: weatherModel.cityName,
+                condition: weatherModel.conditionName
+                //              iconURL: weatherModel.weatherIconURL
+            )
+            
             searchText = ""
         }
-        }
+    }
     
     func didFailWithError(_ error: Error) {
-            print("Error fetching weather data: \(error)")
-        }
-    
-    
-  
+        print("Error fetching weather data: \(error)")
+    }
 }
+//MARK: - <#Section Heading #>
+//MARK: - <#Section Heading #>

@@ -9,20 +9,32 @@ import SwiftUI
 
 struct SearchBarView: View {
     @ObservedObject var viewModel : WeatherViewModel
+    @ObservedObject var locationClient: LocationClient
     @FocusState.Binding var isFocused: Bool
     
-    init(viewModel: WeatherViewModel, isFocused: FocusState<Bool>.Binding) {
+    init(viewModel: WeatherViewModel, locationClient: LocationClient, isFocused: FocusState<Bool>.Binding) {
         self.viewModel = viewModel
+        self.locationClient = locationClient
         self._isFocused = isFocused
-    }
+        
+        locationClient.onLocationUpdate = { coordinate in
+                viewModel.fetchWeatherWithLocation(location: coordinate)
+            }
+        }
     
-      
+    
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 6) {
-                Image(systemName: "location.circle.fill")
-                    .font(.system(size: 22))
-                    .foregroundColor(Color("WeatherColor"))
+                Button(action: {
+                    locationClient.requestLocation()
+                    
+                }) {
+                    Image(systemName: "location.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundColor(Color("WeatherColor"))
+                    
+                }
                 
                 HStack {
                     TextField("都市名を入力してください。", text: $viewModel.searchText)
