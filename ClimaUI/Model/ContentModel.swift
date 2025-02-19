@@ -7,9 +7,10 @@
 
 import Foundation
 
-struct WeatherData {
+struct ContentModel {
     let temperature: Double
-    let cityName: String
+    let cityLabel: String
     let condition: String
+//    let iconURL: URL?
     
 }

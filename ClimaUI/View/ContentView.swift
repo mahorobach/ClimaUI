@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var viewModel = WeatherViewModel()
+    @StateObject private var locationClient = LocationClient()
     @FocusState private var isFocused: Bool
     
     var body: some View {
@@ -16,8 +17,10 @@ struct ContentView: View {
             BackgroundView()
             
             VStack(spacing: 0) {
-                SearchBarView(viewModel: viewModel, isFocused: $isFocused)
-                
+                SearchBarView(
+                    viewModel: viewModel,
+                    locationClient: locationClient,
+                    isFocused: $isFocused)
                 HStack {
                     Spacer()
                     Image(systemName: viewModel.weatherData?.condition ?? "sun.max")
@@ -25,8 +28,8 @@ struct ContentView: View {
                         .font(.system(size: UIScreen.main.bounds.width / 4))
                         .padding(.trailing, 20)
                 }
-                .padding(.top, 5)
                 
+                .padding(.top, 5)
                 
                 HStack{
                     Spacer()
@@ -46,15 +49,46 @@ struct ContentView: View {
                 
                 HStack{
                     Spacer()
-                    Text(viewModel.weatherData?.cityName ?? "Tokyo")
+                    
+                    Text(viewModel.weatherData?.cityLabel ?? "Tokyo")
                         .font(.system(size: 40))
                         .foregroundColor(Color("WeatherColor"))
                 }
                 .padding(.trailing, 20)
                 Spacer()
                 
-                Text("Hello, world!")
-                    .foregroundColor(Color("WeatherColor"))
+                VStack {
+                    Text("位置情報")
+                        .foregroundColor(Color("WeatherColor"))
+                    
+                    if locationClient.requesting {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: Color("WeatherColor")))
+                            .padding()
+                    }
+                    
+                    /*
+                     if  locationClient.lat != 0.0 || locationClient.lon != 0.0 {
+                     Text("緯度：\(locationClient.lat, specifier: "%.4f")")
+                     .foregroundColor(Color("WeatherColor"))
+                     Text("経度：\(locationClient.lon, specifier: "%.4f")")
+                     .foregroundColor(Color("WeatherColor"))
+                     
+                     */
+                    if let location = locationClient.location {
+                        Text("緯度：\(location.latitude, specifier: "%.4f")")
+                            .foregroundColor(Color("WeatherColor"))
+                        Text("経度：\(location.longitude, specifier: "%.4f")")
+                            .foregroundColor(Color("WeatherColor"))
+                    } else if !locationClient.requesting {
+                        Text("緯度：----")
+                            .foregroundColor(Color("WeatherColor"))
+                        Text("経度：----")
+                            .foregroundColor(Color("WeatherColor"))
+                    }
+                }
+                .padding(.bottom, 40)
+                
                 Spacer()
             }
             
